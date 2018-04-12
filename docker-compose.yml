@@ -1,4 +1,6 @@
 version: '3.6'
+volumes:
+  grafana-storage:
 services:
   grafana:
     image: grafana/grafana
@@ -6,10 +8,11 @@ services:
     ports:
       - "3000:3000"
     network_mode: "bridge"
+    volumes:
+      - grafana-storage:/var/lib/grafana
   yellow-labs:
     image: jguyomard/yellowlabtools
     container_name: yellowlabtools
     ports:
       - "8383:8383"
     network_mode: "bridge"
-
