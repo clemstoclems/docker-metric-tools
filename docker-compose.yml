@@ -1,3 +1,4 @@
+---
 version: '3.6'
 volumes:
   grafana-storage:
@@ -5,28 +6,39 @@ services:
   grafana:
     image: grafana/grafana
     container_name: grafana
-    ports:
-      - "3000:3000"
+    ports: ['127.0.0.1:3000:3000']
     volumes:
       - grafana-storage:/var/lib/grafana
+    networks: ['stack']
   yellow-labs:
     image: jguyomard/yellowlabtools
     container_name: yellowlabtools
-    ports:
-      - "8383:8383"
+    ports: ['127.0.0.1:8383:8383']
+    networks: ['stack']
   db:
     image: mysql
-    restart: always
+    container_name: mysql
+    restart: always    
     environment:
       MYSQL_ROOT_PASSWORD: root
+    networks: ['stack']
   adminer:
     image: adminer
+    container_name: adminer_mysql
     restart: always
-    ports:
-      - 8080:8080
+    ports: ['127.0.0.1:8080:8080']
+    networks: ['stack']
   elasticsearch:
-    image: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:${TAG}
+    container_name: elasticsearch
+    environment: ['http.host=0.0.0.0', 'transport.host=127.0.0.1']
+    ports: ['127.0.0.1:9200:9200']
+    networks: ['stack']
   kibana:
-    image: kibana
-    ports:
-      - 5601:5601
+    image: docker.elastic.co/kibana/kibana:${TAG}
+    container_name: kibana
+    ports: ['127.0.0.1:5601:5601']
+    networks: ['stack']
+    depends_on: ['elasticsearch']
+networks: {stack: {}}
+
