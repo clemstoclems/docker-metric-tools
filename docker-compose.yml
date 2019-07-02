@@ -9,36 +9,41 @@ services:
     ports: ['127.0.0.1:3000:3000']
     volumes:
       - grafana-storage:/var/lib/grafana
-    networks: ['stack']
+ #   networks: ['stack']
   yellow-labs:
     image: jguyomard/yellowlabtools
     container_name: yellowlabtools
     ports: ['127.0.0.1:8383:8383']
-    networks: ['stack']
+#    networks: ['stack']
   db:
-    image: mysql
+    image: mysql:5.7
     container_name: mysql
-    restart: always    
+    #restart: always    
+    ports: ['127.0.0.1:3306:3306']
     environment:
       MYSQL_ROOT_PASSWORD: root
-    networks: ['stack']
+#    networks: ['stack']
   adminer:
     image: adminer
     container_name: adminer_mysql
     restart: always
     ports: ['127.0.0.1:8080:8080']
-    networks: ['stack']
+ #   networks: ['stack']
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${TAG}
     container_name: elasticsearch
     environment: ['http.host=0.0.0.0', 'transport.host=127.0.0.1']
     ports: ['127.0.0.1:9200:9200']
-    networks: ['stack']
+ #   networks: ['stack']
   kibana:
     image: docker.elastic.co/kibana/kibana:${TAG}
     container_name: kibana
     ports: ['127.0.0.1:5601:5601']
-    networks: ['stack']
+#    networks: ['stack']
     depends_on: ['elasticsearch']
-networks: {stack: {}}
-
+#sonar:
+#    image: sonarqube:latest
+#    container_name: sonarqube
+#    ports: ['127.0.0.1:9000:9000', '127.0.0.1:9092:9092']
+#    networks: ['stack']
+#networks: {stack: {}}
