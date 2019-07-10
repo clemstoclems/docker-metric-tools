@@ -15,7 +15,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'Copy Batch'
   inputs:
-    SourceFolder: 
+    SourceFolder: .
     Contents: '!.git'
     TargetFolder: '$(build.artifactstagingdirectory)'
 - task: PublishBuildArtifacts@1
