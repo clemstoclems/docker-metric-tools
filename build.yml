@@ -12,11 +12,10 @@ pool:
 
 steps:
 
+
 - task: CopyFiles@2
-  displayName: 'Copy Batch'
   inputs:
-    SourceFolder: .
-    Contents: '!.git'
+    Contents: '**'
     TargetFolder: '$(build.artifactstagingdirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
