@@ -12,7 +12,14 @@ pool:
 
 steps:
 
-- task: PublishPipelineArtifact@1
+- task: CopyFiles@2
+  displayName: 'Copy Batch'
   inputs:
-    targetPath: '$(Pipeline.Workspace)'
-    artifact: 'drop'
+    SourceFolder: 
+    TargetFolder: '$(build.artifactstagingdirectory)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
