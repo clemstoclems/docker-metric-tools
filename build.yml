@@ -13,8 +13,7 @@ pool:
 steps:
 - task: CopyFiles@2
   inputs:
-    Contents: 'docker-compose.yml
-      .env'
+    Contents: 'docker-compose.yml .env'
     TargetFolder: '$(build.artifactstagingdirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
