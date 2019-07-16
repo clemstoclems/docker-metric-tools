@@ -32,7 +32,7 @@ services:
     ports: ['8080:8080']
     network_mode: 'bridge'
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${TAG}
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_TAG}
     container_name: elasticsearch_omnitools
     volumes:
       - 'elastic-storage:/usr/share/elasticsearch/data:rw'
@@ -41,7 +41,7 @@ services:
     ports: ['9200:9200']
     network_mode: 'bridge'
   kibana:
-    image: docker.elastic.co/kibana/kibana:${TAG}
+    image: docker.elastic.co/kibana/kibana:${ELASTIC_TAG}
     container_name: kibana_omnitools
     ports: ['5601:5601']
     depends_on: ['elasticsearch']
