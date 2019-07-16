@@ -1,6 +1,7 @@
 ---
 version: '3.6'
 volumes:
+  elastic-storage:
   grafana-storage:
   mysql-storage: 
 services:
@@ -32,20 +33,22 @@ services:
     network_mode: 'bridge'
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${TAG}
-    container_name: elasticsearch
+    container_name: elasticsearch_omnitools
+    volumes:
+      - 'elastic-storage:/usr/share/elasticsearch/data:rw'
     env_file:
       - env_files/es.env
     ports: ['9200:9200']
     network_mode: 'bridge'
   kibana:
     image: docker.elastic.co/kibana/kibana:${TAG}
-    container_name: kibana
+    container_name: kibana_omnitools
     ports: ['5601:5601']
     depends_on: ['elasticsearch']
     network_mode: 'bridge'
   portainer:
     image: portainer/portainer
-    container_name: portainer
+    container_name: portainer_omnitools
     ports: ['9000:9000']
     volumes:
         - '/var/run/docker.sock:/var/run/docker.sock'
@@ -54,6 +57,6 @@ services:
     network_mode: 'bridge'
   sonar:
     image: sonarqube:latest
-    container_name: sonarqube
+    container_name: sonarqube_omnitools
     ports: ['9100:9000']
     network_mode: 'bridge'
