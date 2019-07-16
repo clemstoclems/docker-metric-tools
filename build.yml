@@ -13,7 +13,9 @@ pool:
 steps:
 - task: CopyFiles@2
   inputs:
-    Contents: '**'
+    Contents: |
+     **
+     !.git/**
     TargetFolder: '$(build.artifactstagingdirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
