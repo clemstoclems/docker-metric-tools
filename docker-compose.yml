@@ -20,10 +20,11 @@ services:
     image: mysql:5.7
     container_name: mysql
     ports: ['3306:3306']
-    volumes:
-      - mysql-storage:/var/lib/mysql
-    env_file:
-      - .env
+    #volumes:
+    #  - mysql-storage:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'yellowlab'
     network_mode: 'bridge'
   adminer:
     image: adminer
@@ -43,3 +44,12 @@ services:
     ports: ['5601:5601']
     depends_on: ['elasticsearch']
     network_mode: 'bridge'
+  portainer:
+    image: portainer/portainer
+    container_name: portainer
+    ports: ['9000:9000']
+    volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock"
+        - "/opt/portainer/data:/data"
+    restart: unless-stopped
+    network_mode: "bridge"
