@@ -2,14 +2,14 @@
 version: '3.6'
 volumes:
   grafana-storage:
-  mysql-storage:
+  #mysql-storage: 
 services:
   grafana:
     image: grafana/grafana
     container_name: grafana
     ports: ['3000:3000']
     volumes:
-      - grafana-storage:/var/lib/grafana
+      - 'grafana-storage:/var/lib/grafana'
     network_mode: 'bridge'
   yellow-labs:
     image: jguyomard/yellowlabtools
@@ -20,8 +20,8 @@ services:
     image: mysql:5.7
     container_name: mysql
     ports: ['3306:3306']
-    #volumes:
-    #  - mysql-storage:/var/lib/mysql
+    volumes:
+      - '/opt/mysql/data:/var/lib/mysql'
     environment:
       MYSQL_ROOT_PASSWORD: 'root'
       MYSQL_DATABASE: 'yellowlab'
@@ -49,12 +49,12 @@ services:
     container_name: portainer
     ports: ['9000:9000']
     volumes:
-        - "/var/run/docker.sock:/var/run/docker.sock"
-        - "/opt/portainer/data:/data"
+        - '/var/run/docker.sock:/var/run/docker.sock'
+        - '/opt/portainer/data:/data'
     restart: unless-stopped
-    network_mode: "bridge"
+    network_mode: 'bridge'
   sonar:
     image: sonarqube:latest
     container_name: sonarqube
-    ports: ['9100:9000', '9092:9092']
-    network_mode: "bridge"
+    ports: ['9100:9000']
+    network_mode: 'bridge'
