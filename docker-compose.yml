@@ -1,0 +1,62 @@
+---
+version: '3.6'
+volumes:
+  elastic-storage:
+  grafana-storage:
+  mysql-storage: 
+services:
+  grafana:
+    image: grafana/grafana
+    container_name: grafana_omnitools
+    ports: ['3000:3000']
+    volumes:
+      - 'grafana-storage:/var/lib/grafana'
+    network_mode: 'bridge'
+  yellow-labs:
+    image: jguyomard/yellowlabtools
+    container_name: yellowlab_omnitools
+    ports: ['8383:8383']
+    network_mode: 'bridge'
+  db:
+    image: mysql:5.7
+    container_name: mysql_omnitools
+    volumes:
+      - 'mysql-storage:/var/lib/mysql'
+    env_file:
+      - env_files/db.env
+    network_mode: 'bridge'
+  adminer:
+    image: adminer
+    container_name: adminer_omnitools
+    restart: always
+    ports: ['8080:8080']
+    network_mode: 'bridge'
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${TAG}
+    container_name: elasticsearch_omnitools
+    volumes:
+      - 'elastic-storage:/usr/share/elasticsearch/data:rw'
+    env_file:
+      - env_files/es.env
+    ports: ['9200:9200']
+    network_mode: 'bridge'
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${TAG}
+    container_name: kibana_omnitools
+    ports: ['5601:5601']
+    depends_on: ['elasticsearch']
+    network_mode: 'bridge'
+  portainer:
+    image: portainer/portainer
+    container_name: portainer_omnitools
+    ports: ['9000:9000']
+    volumes:
+        - '/var/run/docker.sock:/var/run/docker.sock'
+        - '/opt/portainer/data:/data'
+    restart: unless-stopped
+    network_mode: 'bridge'
+  sonar:
+    image: sonarqube:latest
+    container_name: sonarqube_omnitools
+    ports: ['9100:9000']
+    network_mode: 'bridge'
