@@ -53,3 +53,8 @@ services:
         - "/opt/portainer/data:/data"
     restart: unless-stopped
     network_mode: "bridge"
+  sonar:
+    image: sonarqube:latest
+    container_name: sonarqube
+    ports: ['9100:9000', '9092:9092']
+    network_mode: "bridge"
