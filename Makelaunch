@@ -1,0 +1,5 @@
+launch_scan:
+	make launch_yellow_lab_scan env=$(env)
+
+launch_yellow_lab_scan:
+	curl -X POST -H "Content-Type: application/json" -d '{"url":"https://www.leparisien.fr", "waitForResponse":"true"}' "http://localhost:8383/api/runs"
