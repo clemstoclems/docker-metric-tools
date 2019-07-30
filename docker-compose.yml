@@ -5,58 +5,58 @@ volumes:
   grafana-storage:
   mysql-storage: 
 services:
-  grafana:
-    image: grafana/grafana
-    container_name: grafana_omnitools
-    ports: ['3000:3000']
-    volumes:
-      - 'grafana-storage:/var/lib/grafana'
-    network_mode: 'bridge'
-  yellow-labs:
-    image: jguyomard/yellowlabtools
-    container_name: yellowlab_omnitools
-    ports: ['8383:8383']
+  adminer:
+    image: adminer:${ADMINER_TAG}
+    container_name: adminer_omnitools
+    restart: always
+    ports: ['${ADMINER_PUBLIC_PORT}:8080']
     network_mode: 'bridge'
   db:
-    image: mysql:5.7
+    image: mysql:${MYSQL_TAG}
     container_name: mysql_omnitools
     volumes:
       - 'mysql-storage:/var/lib/mysql'
     env_file:
       - env_files/db.env
     network_mode: 'bridge'
-  adminer:
-    image: adminer
-    container_name: adminer_omnitools
-    restart: always
-    ports: ['8080:8080']
-    network_mode: 'bridge'
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${TAG}
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_TAG}
     container_name: elasticsearch_omnitools
     volumes:
       - 'elastic-storage:/usr/share/elasticsearch/data:rw'
     env_file:
       - env_files/es.env
-    ports: ['9200:9200']
+    ports: ['${ELASTIC_PUBLIC_PORT}:9200']
+    network_mode: 'bridge'
+  grafana:
+    image: grafana/grafana:${GRAFANA_TAG}
+    container_name: grafana_omnitools
+    ports: ['${GRAFANA_PUBLIC_PORT}:3000']
+    volumes:
+      - 'grafana-storage:/var/lib/grafana'
     network_mode: 'bridge'
   kibana:
-    image: docker.elastic.co/kibana/kibana:${TAG}
+    image: docker.elastic.co/kibana/kibana:${ELASTIC_TAG}
     container_name: kibana_omnitools
-    ports: ['5601:5601']
+    ports: ['${KIBANA_PUBLIC_PORT}:5601']
     depends_on: ['elasticsearch']
     network_mode: 'bridge'
   portainer:
-    image: portainer/portainer
+    image: portainer/portainer:${PORTAINER_TAG}
     container_name: portainer_omnitools
-    ports: ['9000:9000']
+    ports: ['${PORTAINER_PUBLIC_PORT}:9000']
     volumes:
         - '/var/run/docker.sock:/var/run/docker.sock'
         - '/opt/portainer/data:/data'
     restart: unless-stopped
     network_mode: 'bridge'
-  sonar:
-    image: sonarqube:latest
-    container_name: sonarqube_omnitools
-    ports: ['9100:9000']
+#  sonar:
+#    image: sonarqube:${SONARQUBE_TAG}
+#    container_name: sonarqube_omnitools
+#    ports: ['${SONARQUBE_PUBLIC_PORT}:9000']
+#    network_mode: 'bridge'
+  yellow-labs:
+    image: jguyomard/yellowlabtools:${YELLOW_LABS_TAG}
+    container_name: yellowlab_omnitools
+    ports: ['${YELLOW_LABS_PUBLIC_PORT}:8383']
     network_mode: 'bridge'
