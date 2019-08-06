@@ -11,22 +11,6 @@ services:
     links:
       - yellow-lab:yellow-lab
     network_mode: 'bridge'
-  adminer:
-    image: adminer:${ADMINER_TAG}
-    container_name: adminer_omnitools
-    restart: always
-    ports: ['${ADMINER_PUBLIC_PORT}:8080']
-    links:
-      - db:db
-    network_mode: 'bridge'
-  db:
-    image: mysql:${MYSQL_TAG}
-    container_name: mysql_omnitools
-    volumes:
-      - 'mysql-storage:/var/lib/mysql'
-    env_file:
-      - env_files/db.env
-    network_mode: 'bridge'
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_TAG}
     container_name: elasticsearch_omnitools
@@ -41,9 +25,19 @@ services:
     container_name: grafana_omnitools
     ports: ['${GRAFANA_PUBLIC_PORT}:3000']
     links:
-      - db:db
+      - influxdb:influxdb
     volumes:
       - 'grafana-storage:/var/lib/grafana'
+    network_mode: 'bridge'
+  influxdb:
+    image: influxdb:${INFLUXDB_TAG}
+    container_name: influxdb_omnitools
+    ports : ['${INFLUXDB_PUBLIC_PORT}:8086']
+    volumes:
+      - 'influxdb-storage:/var/lib/influxdb'
+      - '$PWD/config/influxdb:/var/local/data'
+    env_file:
+      - env_files/influxdb.env
     network_mode: 'bridge'
   kibana:
     image: docker.elastic.co/kibana/kibana:${ELASTIC_TAG}
@@ -73,4 +67,4 @@ services:
 volumes:
   elastic-storage:
   grafana-storage:
-  mysql-storage: 
+  influxdb-storage:
