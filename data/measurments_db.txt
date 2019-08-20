@@ -1,9 +1,0 @@
-create database measurments_omnilog
-
-omnilog_front, global_score=98 1550069725
-omnilog_front, global_score=90 1552488925
-omnilog_front, global_score=85 1555167325
-omnilog_front, global_score=81 1557759325
-omnilog_front, global_score=79 1560437725
-omnilog_front, global_score=74 1563029725
-omnilog_front, global_score=68 1565708125
