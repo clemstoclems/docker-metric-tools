@@ -23,38 +23,10 @@ endif
 
 create_db:
 	echo "creating db measurments "
-	echo "create database measurments \n" >> data/measurments_db.txt
+	echo "create database measurments \n" >> config/measurments_db.txt
 
 create_dashboard:
 	echo "creating dashboards "
 	echo "" >> data/graf.json
 
-#include Makelaunch
-
-launch_scan:
-ifeq ($(url),)
-	@echo "$(ccred) Please provide an url to scan as url=UrlToScan ! $(ccend)"
-else
-	make launch_yellow_lab_scan url=$(url)
-endif
-
-launch_yellow_lab_scan:
-	curl -X POST -H "Content-Type: application/json" -d '{"url":"${url}", "waitForResponse":"true"}' "localhost:8383/api/runs" | sed 's/Found. Redirecting to *//' >> data/measures/path_${url}.txt
-	make get_results_api file=data/measures/path_${url}.txt
-	rm data/measures/path_${url}.txt
-
-get_results_api:
-	#Global score
-	curl -s "localhost:8383$$(cat ${file})" >> data/measures/result_${url}.json
-	cat data/measures/result_${url}.json | python -c "import sys, json; print json.load(sys.stdin)['scoreProfiles']['generic']['globalScore']" >> data/measures/global_score_${url}.txt
-	
-	#Page weight Score
-	#@echo ${MESURES}
-	#IFS=',' && \
-	#for mesure in $${MESURES}; do \
-	#	@echo mesure; \
-	#done
-	#cat data/measures/result_${url}.json | python -c "import sys, json; print json.load(sys.stdin)['scoreProfiles']['generic']['categories']['pageWeight']['categoryScore']" >> data/measures/global_score_${url}.txt
-	rm data/measures/result_${url}.json
-	./scripts/insert_data.sh ${url}
-	
+include Makelaunch
