@@ -7,6 +7,8 @@ ccyellow = $(shell echo "\033[0;33m")
 ccblue = $(shell echo "\033[0;34m")
 ccend = $(shell echo "\033[0m")
 
+MESURES="pageWeight,requests,domComplexity,domManipulations,scroll,badJavascript,jQuery,cssComplexity,badCSS,fonts,serverConfig"
+
 all:
 	@echo "$(ccyellow)Please choose a task or write 'make help' for help $(ccend)"
 
@@ -31,7 +33,7 @@ create_dashboard:
 
 launch_scan:
 ifeq ($(url),)
-	@echo "$(ccred) Please provide an url to scan ! $(ccend)"
+	@echo "$(ccred) Please provide an url to scan as url=UrlToScan ! $(ccend)"
 else
 	make launch_yellow_lab_scan url=$(url)
 endif
@@ -42,7 +44,17 @@ launch_yellow_lab_scan:
 	rm data/measures/path_${url}.txt
 
 get_results_api:
+	#Global score
 	curl -s "localhost:8383$$(cat ${file})" >> data/measures/result_${url}.json
-	cat data/measures/result_${url}.json | python -c "import sys, json; print json.load(sys.stdin)['scoreProfiles']['generic']['globalScore']" >> data/measures/score_${url}.txt
+	cat data/measures/result_${url}.json | python -c "import sys, json; print json.load(sys.stdin)['scoreProfiles']['generic']['globalScore']" >> data/measures/global_score_${url}.txt
+	
+	#Page weight Score
+	#@echo ${MESURES}
+	#IFS=',' && \
+	#for mesure in $${MESURES}; do \
+	#	@echo mesure; \
+	#done
+	#cat data/measures/result_${url}.json | python -c "import sys, json; print json.load(sys.stdin)['scoreProfiles']['generic']['categories']['pageWeight']['categoryScore']" >> data/measures/global_score_${url}.txt
 	rm data/measures/result_${url}.json
-	./scripts/insert_data.sh
+	./scripts/insert_data.sh ${url}
+	
