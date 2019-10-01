@@ -13,7 +13,7 @@ launch_yellow_lab_scan:
 get_results_api:
 	#Global score
 	curl -s "yellowlab_omnitools:8383$$(cat ${file})" >> data/measures/result_${url}.json
-	cat data/measures/result_${url}.json | python -c "import sys, json; print json.load(sys.stdin)['scoreProfiles']['generic']['globalScore']" >> data/measures/global_score_${url}.txt
+	cat data/measures/result_${url}.json | python2.7 -c "import sys, json; print json.load(sys.stdin)['scoreProfiles']['generic']['globalScore']" >> data/measures/global_score_${url}.txt
 	
 	#Page weight Score
 	#@echo ${MESURES}
@@ -21,6 +21,6 @@ get_results_api:
 	#for mesure in $${MESURES}; do \
 	#	@echo mesure; \
 	#done
-	#cat data/measures/result_${url}.json | python -c "import sys, json; print json.load(sys.stdin)['scoreProfiles']['generic']['categories']['pageWeight']['categoryScore']" >> data/measures/global_score_${url}.txt
+	#cat data/measures/result_${url}.json | python2.7 -c "import sys, json; print json.load(sys.stdin)['scoreProfiles']['generic']['categories']['pageWeight']['categoryScore']" >> data/measures/global_score_${url}.txt
 	rm data/measures/result_${url}.json
 	./scripts/insert_data.sh ${url}
