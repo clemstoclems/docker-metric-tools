@@ -5,7 +5,7 @@
 # https://aka.ms/yaml
 
 trigger:
-- develop
+- feature/yellow-labs-grafana
 
 pool:
   name: 'omnidevops'
