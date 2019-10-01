@@ -10,6 +10,7 @@ services:
     ports: ['80:80']
     links:
       - yellow-lab:yellow-lab
+      - influxdb:influxdb
     network_mode: 'bridge'
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_TAG}
@@ -54,11 +55,11 @@ services:
         - '/opt/portainer/data:/data'
     restart: unless-stopped
     network_mode: 'bridge'
-#  sonar:
-#    image: sonarqube:${SONARQUBE_TAG}
-#    container_name: sonarqube_omnitools
-#    ports: ['${SONARQUBE_PUBLIC_PORT}:9000']
-#    network_mode: 'bridge'
+  sonar:
+    image: sonarqube:${SONARQUBE_TAG}
+    container_name: sonarqube_omnitools
+    ports: ['${SONARQUBE_PUBLIC_PORT}:9000']
+    network_mode: 'bridge'
   yellow-lab:
     image: jguyomard/yellowlabtools:${YELLOW_LABS_TAG}
     container_name: yellowlab_omnitools
