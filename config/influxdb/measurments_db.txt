@@ -1,0 +1,15 @@
+# DDL
+
+CREATE DATABASE omnitools
+
+# DML
+
+# CONTEXT-DATABASE: omnitools
+
+omnitools_front,url=www.omnilog.fr global_score=98 1552488925
+omnitools_front,url=www.omnilog.fr global_score=85 1555167325
+omnitools_front,url=www.omnilog.fr global_score=81 1557759325
+omnitools_front,url=www.omnilog.fr global_score=79 1560437725
+omnitools_front,url=www.omnilog.fr global_score=74 1563029725
+omnitools_front,url=www.omnilog.fr global_score=68 1565708125
+omnitools_front,url=www.omnilog.fr global_score=85 1566298525
