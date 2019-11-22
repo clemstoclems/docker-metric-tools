@@ -1,0 +1,71 @@
+---
+version: '3.6'
+services:
+  app:
+    build: .
+    container_name: application_tools
+    volumes:
+      - '.:/data/www/'
+    restart: always
+    ports: ['80:80']
+    links:
+      - yellow-lab:yellow-lab
+      - influxdb:influxdb
+    network_mode: 'bridge'
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_TAG}
+    container_name: elasticsearch_omnitools
+    volumes:
+      - 'elastic-storage:/usr/share/elasticsearch/data:rw'
+    env_file:
+      - env_files/es.env
+    ports: ['${ELASTIC_PUBLIC_PORT}:9200']
+    network_mode: 'bridge'
+  grafana:
+    image: grafana/grafana:${GRAFANA_TAG}
+    container_name: grafana_omnitools
+    ports: ['${GRAFANA_PUBLIC_PORT}:3000']
+    links:
+      - influxdb:influxdb
+    volumes:
+      - 'grafana-storage:/var/lib/grafana'
+    network_mode: 'bridge'
+  influxdb:
+    image: influxdb:${INFLUXDB_TAG}
+    container_name: influxdb_omnitools
+    ports : ['${INFLUXDB_PUBLIC_PORT}:8086']
+    volumes:
+      - 'influxdb-storage:/var/lib/influxdb'
+      - '$PWD/config/influxdb:/var/local/data'
+    env_file:
+      - env_files/influxdb.env
+    network_mode: 'bridge'
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${KIBANA_TAG}
+    container_name: kibana_omnitools
+    ports: ['${KIBANA_PUBLIC_PORT}:5601']
+    depends_on: ['elasticsearch']
+    network_mode: 'bridge'
+  portainer:
+    image: portainer/portainer:${PORTAINER_TAG}
+    container_name: portainer_omnitools
+    ports: ['${PORTAINER_PUBLIC_PORT}:9000']
+    volumes:
+        - '/var/run/docker.sock:/var/run/docker.sock'
+        - '/opt/portainer/data:/data'
+    restart: unless-stopped
+    network_mode: 'bridge'
+  sonar:
+    image: sonarqube:${SONARQUBE_TAG}
+    container_name: sonarqube_omnitools
+    ports: ['${SONARQUBE_PUBLIC_PORT}:9000']
+    network_mode: 'bridge'
+  yellow-lab:
+    image: jguyomard/yellowlabtools:${YELLOW_LABS_TAG}
+    container_name: yellowlab_omnitools
+    ports: ['${YELLOW_LABS_PUBLIC_PORT}:8383']
+    network_mode: 'bridge'
+volumes:
+  elastic-storage:
+  grafana-storage:
+  influxdb-storage:
