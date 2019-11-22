@@ -60,6 +60,18 @@ services:
     container_name: sonarqube_omnitools
     ports: ['${SONARQUBE_PUBLIC_PORT}:9000']
     network_mode: 'bridge'
+  telegraf:
+    image: telegraf:1.12.5-alpine
+    container_name: telegraf_omnitools
+    ports:
+      - '${TELEGRAF_PUBLIC_PORT_UDP}:8092'
+      - '${TELEGRAF_PUBLIC_PORT_TCP}:8094'
+      - '${TELEGRAF_PUBLIC_PORT_STATSD}:8125'
+    volumes:
+      - '$PWD/config/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:rw'
+    network_mode: 'bridge'
+    depends_on:
+      - 'influxdb'
   yellow-lab:
     image: jguyomard/yellowlabtools:${YELLOW_LABS_TAG}
     container_name: yellowlab_omnitools
