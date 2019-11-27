@@ -64,6 +64,7 @@ services:
     image: jguyomard/yellowlabtools:${YELLOW_LABS_TAG}
     container_name: yellowlab_omnitools
     ports: ['${YELLOW_LABS_PUBLIC_PORT}:8383']
+    restart: always
     network_mode: 'bridge'
 volumes:
   elastic-storage:
