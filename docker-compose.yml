@@ -10,7 +10,7 @@ services:
     links:
       - yellow-lab:yellow-lab
       - influxdb:influxdb
-    network_mode: 'bridge'
+    networks: ["monitoring"]
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_TAG}
     container_name: elasticsearch_omnitools
@@ -19,7 +19,7 @@ services:
     env_file:
       - env_files/es.env
     ports: ['${ELASTIC_PUBLIC_PORT}:9200']
-    network_mode: 'bridge'
+    networks: ["monitoring"]
   grafana:
     image: grafana/grafana:${GRAFANA_TAG}
     container_name: grafana_omnitools
@@ -28,7 +28,7 @@ services:
       - influxdb:influxdb
     volumes:
       - 'grafana-storage:/var/lib/grafana'
-    network_mode: 'bridge'
+    networks: ["monitoring"]
   influxdb:
     image: influxdb:${INFLUXDB_TAG}
     container_name: influxdb_omnitools
@@ -38,13 +38,13 @@ services:
       - '$PWD/config/influxdb:/var/local/data'
     env_file:
       - env_files/influxdb.env
-    network_mode: 'bridge'
+    networks: ["monitoring"]
   kibana:
     image: docker.elastic.co/kibana/kibana:${KIBANA_TAG}
     container_name: kibana_omnitools
     ports: ['${KIBANA_PUBLIC_PORT}:5601']
     depends_on: ['elasticsearch']
-    network_mode: 'bridge'
+    networks: ["monitoring"]
   portainer:
     image: portainer/portainer:${PORTAINER_TAG}
     container_name: portainer_omnitools
@@ -53,12 +53,12 @@ services:
         - '/var/run/docker.sock:/var/run/docker.sock'
         - '/opt/portainer/data:/data'
     restart: unless-stopped
-    network_mode: 'bridge'
+    networks: ["monitoring"]
   sonar:
     image: sonarqube:${SONARQUBE_TAG}
     container_name: sonarqube_omnitools
     ports: ['${SONARQUBE_PUBLIC_PORT}:9000']
-    network_mode: 'bridge'
+    networks: ["monitoring"]
     environment:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
   telegraf:
@@ -70,7 +70,7 @@ services:
       - '${TELEGRAF_PUBLIC_PORT_STATSD}:8125'
     volumes:
       - '$PWD/config/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:rw'
-    network_mode: 'bridge'
+    networks: ["monitoring"]
     depends_on:
       - 'influxdb'
   yellow-lab:
@@ -78,8 +78,12 @@ services:
     container_name: yellowlab_omnitools
     ports: ['${YELLOW_LABS_PUBLIC_PORT}:8383']
     restart: always
-    network_mode: 'bridge'
+    networks: ["monitoring"]
+networks:
+  monitoring:
+    driver: bridge
 volumes:
   elastic-storage:
   grafana-storage:
   influxdb-storage:
+
