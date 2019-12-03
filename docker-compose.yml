@@ -60,6 +60,8 @@ services:
     container_name: sonarqube_omnitools
     ports: ['${SONARQUBE_PUBLIC_PORT}:9000']
     network_mode: 'bridge'
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
   yellow-lab:
     image: jguyomard/yellowlabtools:${YELLOW_LABS_TAG}
     container_name: yellowlab_omnitools
