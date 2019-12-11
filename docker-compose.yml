@@ -63,7 +63,7 @@ services:
     environment:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
   yellow-lab:
-    image: jguyomard/yellowlabtools:${YELLOW_LABS_TAG}
+    image: lumberjackotters/yellow-lab-tools:${YELLOW_LABS_TAG}
     container_name: yellowlab_omnitools
     ports: ['${YELLOW_LABS_PUBLIC_PORT}:8383']
     restart: always
