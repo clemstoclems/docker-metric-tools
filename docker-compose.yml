@@ -1,84 +1,186 @@
-version: '3.6'
+version: '3.7'
 services:
+  # ========================
+  # Reverse Proxy Traefik
+  # ========================
+  traefik:
+    image: traefik:${TRAEFIK_TAG}
+    container_name: traefik_omnitools
+    command: --api --docker
+    restart: always
+    networks: ["monitoring"]
+    ports:
+      - "${TRAEFIK_HTTP_PUBLIC_PORT}:80"
+      - "${TRAEFIK_HTTPS_PUBLIC_PORT}:443"
+      - "${TRAEFIK_UI_PUBLIC_PORT}:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "${PWD}/config/traefik/traefik.toml:/traefik.toml"
+      #- "${PWD}/config/traefik/ssl:/var/ssl"
+    labels:
+      - "traefik.frontend.rule=Host:traefik.omnitools"
+      - "traefik.port=${TRAEFIK_UI_PUBLIC_PORT}"
+      - "traefik.backend=traefik"
+
+  # ========================
+  # Application
+  # ========================
   app:
     build: .
     container_name: application_tools
+    labels:
+        - "traefik.frontend.rule=Host:app.omnitools"
+        - "traefik.port=${TRAEFIK_HTTP_PUBLIC_PORT}"
+        - "traefik.backend=app"
+        - "traefik.frontend.entryPoints=http,https"
     volumes:
       - '.:/data/www/'
     restart: always
-    ports: ['80:80']
+    #ports: ['80:80']
     links:
-      - yellow-lab:yellow-lab
+      - yellowlab:yellowlab
       - influxdb:influxdb
     networks: ["monitoring"]
+
+  # ========================
+  # Elastic Search
+  # ========================
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_TAG}
     container_name: elasticsearch_omnitools
+    labels:
+        - "traefik.frontend.rule=Host:elasticsearch.omnitools"
+        - "traefik.port=${ELASTIC_PUBLIC_PORT}"
+        - "traefik.backend=elasticsearch"
+        - "traefik.frontend.entryPoints=http,https"
     volumes:
       - 'elastic-storage:/usr/share/elasticsearch/data:rw'
     env_file:
       - env_files/es.env
-    ports: ['${ELASTIC_PUBLIC_PORT}:9200']
+    #ports: ['${ELASTIC_PUBLIC_PORT}:9200']
     networks: ["monitoring"]
+
+  # ========================
+  # Grafana
+  # ========================
   grafana:
     image: grafana/grafana:${GRAFANA_TAG}
     container_name: grafana_omnitools
-    ports: ['${GRAFANA_PUBLIC_PORT}:3000']
+    labels:
+        - "traefik.frontend.rule=Host:grafana.omnitools"
+        - "traefik.port=${GRAFANA_PUBLIC_PORT}"
+        - "traefik.backend=grafana"
+        - "traefik.frontend.entryPoints=http,https"
+        #ports: ['${GRAFANA_PUBLIC_PORT}:3000']
     links:
       - influxdb:influxdb
     volumes:
       - 'grafana-storage:/var/lib/grafana'
     networks: ["monitoring"]
+
+  # ========================
+  # InfluxDb
+  # ========================
   influxdb:
     image: influxdb:${INFLUXDB_TAG}
     container_name: influxdb_omnitools
-    ports : ['${INFLUXDB_PUBLIC_PORT}:8086']
+    labels:
+      - "traefik.frontend.rule=Host:influxdb.omnitools"
+      - "traefik.port=${INFLUXDB_PUBLIC_PORT}"
+      - "traefik.backend=influxdb"
+      - "traefik.frontend.entryPoints=http,https"
+    #ports : ['${INFLUXDB_PUBLIC_PORT}:8086']
     volumes:
       - 'influxdb-storage:/var/lib/influxdb'
       - '$PWD/config/influxdb:/var/local/data'
     env_file:
       - env_files/influxdb.env
     networks: ["monitoring"]
+
+  # ========================
+  # Kibana
+  # ========================
   kibana:
     image: docker.elastic.co/kibana/kibana:${KIBANA_TAG}
     container_name: kibana_omnitools
-    ports: ['${KIBANA_PUBLIC_PORT}:5601']
+    labels:
+      - "traefik.frontend.rule=Host:kibana.omnitools"
+      - "traefik.port=${KIBANA_PUBLIC_PORT}"
+      - "traefik.backend=kibana"
+      - "traefik.frontend.entryPoints=http,https"
+    #ports: ['${KIBANA_PUBLIC_PORT}:5601']
     depends_on: ['elasticsearch']
     networks: ["monitoring"]
+
+  # ========================
+  # Portainer
+  # ========================
   portainer:
     image: portainer/portainer:${PORTAINER_TAG}
     container_name: portainer_omnitools
-    ports: ['${PORTAINER_PUBLIC_PORT}:9000']
+    labels:
+        - "traefik.frontend.rule=Host:portainer.omnitools"
+        - "traefik.port=${PORTAINER_PUBLIC_PORT}"
+        - "traefik.backend=portainer"
+        - "traefik.frontend.entryPoints=http,https"
     volumes:
         - '/var/run/docker.sock:/var/run/docker.sock'
         - '/opt/portainer/data:/data'
     restart: unless-stopped
     networks: ["monitoring"]
+
+  # ========================
+  # Sonar
+  # ========================
   sonar:
     image: sonarqube:${SONARQUBE_TAG}
     container_name: sonarqube_omnitools
-    ports: ['${SONARQUBE_PUBLIC_PORT}:9000']
+    labels:
+        - "traefik.frontend.rule=Host:sonarqube.omnitools"
+        - "traefik.port=${SONARQUBE_PUBLIC_PORT}"
+        - "traefik.backend=sonar"
+        - "traefik.frontend.entryPoints=http,https"
+    #ports: ['${SONARQUBE_PUBLIC_PORT}:9000']
     networks: ["monitoring"]
     environment:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+
+  # ========================
+  # Telegraf
+  # ========================
   telegraf:
     image: telegraf:1.12.5-alpine
     container_name: telegraf_omnitools
-    ports:
-      - '${TELEGRAF_PUBLIC_PORT_UDP}:8092'
-      - '${TELEGRAF_PUBLIC_PORT_TCP}:8094'
-      - '${TELEGRAF_PUBLIC_PORT_STATSD}:8125'
+    labels:
+      - "traefik.frontend.rule=Host:telegraf.omnitools"
+      - "traefik.port=${TELEGRAF_PUBLIC_PORT_UDP}"
+      - "traefik.backend=telegraf"
+      - "traefik.frontend.entryPoints=http,https"
+#ports:
+    #  - '${TELEGRAF_PUBLIC_PORT_UDP}:8092'
+    #  - '${TELEGRAF_PUBLIC_PORT_TCP}:8094'
+    #  - '${TELEGRAF_PUBLIC_PORT_STATSD}:8125'
     volumes:
       - '$PWD/config/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:rw'
     networks: ["monitoring"]
     depends_on:
       - 'influxdb'
-  yellow-lab:
-    image: jguyomard/yellowlabtools:${YELLOW_LABS_TAG}
+
+  # ========================
+  # Yellow-Lab
+  # ========================
+  yellowlab:
+    image: lumberjackotters/yellow-lab-tools:${YELLOW_LAB_TAG}
     container_name: yellowlab_omnitools
-    ports: ['${YELLOW_LABS_PUBLIC_PORT}:8383']
+    labels:
+      - "traefik.frontend.rule=Host:yellowlab.omnitools"
+      - "traefik.port=${YELLOW_LAB_PUBLIC_PORT}"
+      - "traefik.backend=yellowlab"
+      - "traefik.frontend.entryPoints=http,https"
+    #ports: ['${YELLOW_LABS_PUBLIC_PORT}:8383']
     restart: always
     networks: ["monitoring"]
+
 networks:
   monitoring:
     driver: bridge
